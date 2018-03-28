@@ -1,4 +1,4 @@
-# PortScaner Карамов Артру ФИИТ-201
+# PortScaner Карамов Артур ФИИТ-201
 формат ввода :
  ``` PortScaner.exe beginPort finishPort transportProtocol ```
 ## С помощью утилиты nmap проверим открытые Tcp порты.
