@@ -6,8 +6,8 @@ namespace PortScaner
 {
     public class TcpPortChecker : PortCheckar
     {
-        public TcpPortChecker(int beginPort, int finishPort)
-            : base(beginPort, finishPort, TransportProtocol.Tcp)
+        public TcpPortChecker(int beginPort, int finishPort, string hostName)
+            : base(beginPort, finishPort, TransportProtocol.Tcp, hostName)
         {
         }
 
@@ -20,13 +20,14 @@ namespace PortScaner
                 {
                     try
                     {
-                        tcp.Connect(localHost, port);
+                        tcp.Connect(IpHost, port);
                         Console.WriteLine(port);
                         openPorts.Add(port);
                     }
                     catch (Exception e)
                     {
                         // ignored
+                        //Console.WriteLine(e);
                     }
                 }
             }

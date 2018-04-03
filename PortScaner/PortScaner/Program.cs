@@ -8,21 +8,23 @@ namespace PortScaner
 {
     class Program
     {
+
         static void Main(string[] args)
         {
             try
             {
                 var begin = int.Parse(args[0]);
                 var finish = int.Parse(args[1]);
+                var hostName = args[3];
                 if (args[2] == "Tcp")
                 {
-                    var tcpChecker = new TcpPortChecker(begin, finish);
+                    var tcpChecker = new TcpPortChecker(begin, finish, hostName);
                     tcpChecker.GetOpenPorts();
                 }
 
                 if (args[2] == "Udp")
                 {
-                    var udpChecker = new UdpPortChecker(begin, finish);
+                    var udpChecker = new UdpPortChecker(begin, finish, hostName);
                     udpChecker.GetOpenPorts();
                 }
             }

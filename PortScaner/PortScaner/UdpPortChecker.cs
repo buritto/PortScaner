@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -8,32 +9,32 @@ namespace PortScaner
 {
     public class UdpPortChecker : PortCheckar
     {
-        public UdpPortChecker(int beginPort, int finishPort) : base(beginPort, finishPort, TransportProtocol.Udp)
+        public UdpPortChecker(int beginPort, int finishPort, string hostName)
+            : base(beginPort, finishPort, TransportProtocol.Udp, hostName)
         {
         }
 
         public override List<int> CheckPorts(int startPort, int finishPort)
         {
+            var udp = new UdpClient();
             var openPorts = new List<int>();
-            for (var port = startPort; port <= finishPort; port++)
+            for (var i = startPort; i <= finishPort; i++)
             {
-                using (var udp = new UdpClient())
+                using (var socket = new Socket(SocketType.Dgram, ProtocolType.Udp))
                 {
+                    socket.ReceiveTimeout = 2000;
                     try
                     {
-                        var remoteIpEndPoint = new IPEndPoint(localHost, port);
-                        var sendBytes = Encoding.ASCII.GetBytes("Are you open ?");
-                        udp.Send(sendBytes, sendBytes.Length, remoteIpEndPoint);
-                        var task = udp.ReceiveAsync();
-                        var timeOut = Task.Delay(100);
-                        if (Task.WhenAny(task, timeOut).Result != task)
-                        {
-                            openPorts.Add(port);
-                        }
+                        var remoteServer = new IPEndPoint(IpHost, i);
+                        socket.SendTo(Encoding.ASCII.GetBytes("Are you open"), remoteServer);
+                        var buffer = new byte[4096];
+                        socket.Receive(buffer);
                     }
                     catch (SocketException e)
                     {
-                        //ignore
+                        if (e.ErrorCode != 10060) continue;
+                        openPorts.Add(i);
+                        Console.WriteLine(i);
                     }
                 }
             }

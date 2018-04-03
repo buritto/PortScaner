@@ -11,19 +11,23 @@ namespace PortScaner
         Udp = 1,
         Tcp = 2
     }
-
+    //-sT remote_host
     public abstract class PortCheckar
     {
         protected int BeginPort;
         protected int FinishPort;
-        protected readonly IPAddress localHost = IPAddress.Parse("127.0.0.1");
+        protected readonly IPAddress IpHost;//=  Dns.GetHostAddresses("cs.usu.edu.ru")[0];// IPAddress.Parse("127.0.0.1");
         protected List<Task<List<int>>> TasksPool;
         protected int portForTask = 20;
         private string logPath = "PortScaner.log";
         private readonly TransportProtocol protocol;
-        protected PortCheckar(int beginPort, int finishPort, TransportProtocol protocol)
+        protected PortCheckar(int beginPort, int finishPort, TransportProtocol protocol, string hostName)
         {
-            this.protocol = protocol;
+            //cs.usu.edu.ru
+            this.protocol = protocol;           
+            IpHost = Dns.GetHostAddresses(hostName)[0];
+            if (hostName == "localhost")
+                IpHost = IPAddress.Parse("127.0.0.1");
             if (beginPort > finishPort)
             {
                 var port = beginPort;
@@ -52,7 +56,7 @@ namespace PortScaner
             }
             SaveToLogFile(openPorts);
         }
-
+        // число портов на таск  - потестить
         private IEnumerable<Tuple<int, int>> GetBlocks()
         {
             var wholePart = (FinishPort - BeginPort) / portForTask;
